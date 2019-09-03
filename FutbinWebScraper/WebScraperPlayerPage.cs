@@ -10,6 +10,7 @@ using HtmlAgilityPack;
 using System.Collections.ObjectModel;
 using System.Collections;
 using OpenQA.Selenium.Chrome;
+using System.Net;
 
 namespace FutbinWebScraper
 {
@@ -162,6 +163,49 @@ namespace FutbinWebScraper
 
             return src;
         }
+
+        public string getPlayerId() {
+
+            var div = htmlDocument.DocumentNode.SelectSingleNode("//*[@id=\"page_comment_picture\"]");
+            var pic=div.GetAttributeValue("data-picture", "");
+            pic = pic.Substring(pic.IndexOf("ers/")+5);
+            pic = pic.Substring(0, pic.IndexOf("."));
+            
+            return pic;
+        }
+
+        public void getJsonData() {
+            string id = this.getPlayerId();
+            string url = "https://www.futbin.com/19/playerGraph?type=daily_graph&year=19&player="+id+"&set_id=";
+            using (WebClient wc = new WebClient())
+            {
+                
+                var jsonString = wc.DownloadString(url);
+                dynamic json = Newtonsoft.Json.JsonConvert.DeserializeObject(jsonString);
+                var pcPriceDataArray = json["pc"];
+                
+
+                var xboxPriceDataArray = json["xbox"];
+                var psPriceDataArray = json["ps"];
+                try
+                {
+                    foreach (var arr in pcPriceDataArray)
+                    {
+                        Console.WriteLine(arr[0] + ": " + arr[1]);
+                    }
+                }
+                catch (Exception e) {
+                    Console.WriteLine(e.GetType());
+                    Console.WriteLine(this.getName());
+                }
+                
+        
+            }
+           
+
+        }
+
+
 
 
        

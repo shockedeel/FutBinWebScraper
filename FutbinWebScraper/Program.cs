@@ -21,7 +21,7 @@ namespace FutbinWebScraper
     };
     class Program
     {
-        public static async void getHtmlAsync(String ur)
+        public static async void getHtmlAsync(String ur,String t)
         {
            
 
@@ -135,25 +135,35 @@ namespace FutbinWebScraper
        public static void Main(string[] args)
         {
             //getHtmlAsync("https://www.futbin.com/19/player/17575/Cristiano%20Ronaldo/");
-            WebScraperListPage test = new WebScraperListPage(WebScraper.getHtml("https://www.futbin.com/players"));
-            while (test.getNextPage() != null)
-            {
 
+            thisOneWaits("https://www.futbin.com/players");
+            Console.ReadLine();
 
-                List<String> playerurls = new List<String>();
-                test.getPlayersUrls(playerurls);
-                Console.WriteLine("\n\n\nOPENIING NEW WOIEJRFPOI\n\n\n");
-                thisOneWaits(playerurls).Wait();
-               
-                
-                test = new WebScraperListPage(WebScraper.getHtml(test.getNextPage()));
-
-            }
 
 
         }
-        public static async Task thisOneWaits(List<String> playerUrls) {
-            await getPlayerPageInfoAsync(playerUrls);
+        public static async void thisOneWaits(String pageUrl) {
+            var ht = await WebScraper.getHtmlAsync(pageUrl);
+           var test= new WebScraperListPage(ht);
+            List<String> playerurls = new List<String>();
+            List<Task<HtmlDocument>> playerHtmls = new List<Task<HtmlDocument>>();
+            test.getPlayersUrls(playerurls);
+            foreach (var playerUrl in playerurls) {
+                Console.WriteLine("pp");
+                var webHtml = WebScraper.getHtmlAsync(WebScraper.baseUrl+playerUrl);
+                playerHtmls.Add(webHtml);
+               
+
+
+            }
+            foreach (var playerHtml in playerHtmls) {
+                var html = await playerHtml;
+                var playerScraper = new WebScraperPlayerPage(html);
+                playerScraper.getPlayerId();
+                playerScraper.getJsonData();
+                Console.WriteLine(playerScraper.findCTL()[0]);
+            }
+
 
 
 
@@ -180,22 +190,38 @@ namespace FutbinWebScraper
 
         }
 
+
+
+
+
         public static async Task getPlayerPageInfoAsync(List<String>urls) {//there are 30 fuckers per thing
                                                                            //need to create big boi fuction for all the tings
             
             List<WebScraperPlayerPage> playerScrapers=new List<WebScraperPlayerPage>();
+            var i = 0;
+            var counter = 0;
             foreach (var url in urls) {
-                try
+                if (i == 0)
                 {
-                    var i = await Task.Run(() => WebScraper.getHtml(WebScraper.baseUrl + url));
-                    WebScraperPlayerPage iScrape = new WebScraperPlayerPage(i);
-                    Console.WriteLine("\n\n\nName: " + iScrape.getName() + " Overall Rating: " + iScrape.getOverallRating() + "\n\n\n");
-                    playerScrapers.Add(iScrape);
+                    try
+                    {
+                        counter++;
+                        Console.WriteLine("\n\nIT RUNS IT RUNS\n"+counter+"\n");
+                        getHtmlAsync(url);
+                        //WebScraperPlayerPage iScrape = new WebScraperPlayerPage(i);
+                        //Console.WriteLine("\n\n\nName: " + iScrape.getName() + " Overall Rating: " + iScrape.getOverallRating() + "\n\n\n");
+                        //playerScrapers.Add(iScrape);
+                        i = 1;
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.ToString());
+                        Console.WriteLine("Failed Failed Failed\n\n");
+                        
+                    }
                 }
-                catch (Exception e) {
-                    Console.WriteLine(e.ToString());
-                    Console.WriteLine("Failed Failed Failed\n\n");
-
+                else {
+                    i = 0;
                 }
 
 
@@ -203,6 +229,11 @@ namespace FutbinWebScraper
             
           
 
+        }
+        public static async void getHtmlAsync(String url) {
+          var i= await Task.Run(() => WebScraper.getHtmlAsync(WebScraper.baseUrl + url));
+            var j = new WebScraperPlayerPage(i);
+            Console.WriteLine(j.getOverallRating());
         }
 
 

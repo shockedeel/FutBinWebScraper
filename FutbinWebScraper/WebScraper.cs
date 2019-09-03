@@ -2,6 +2,7 @@
 using OpenQA.Selenium.Chrome;
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Text;
 
 namespace FutbinWebScraper
@@ -14,24 +15,22 @@ namespace FutbinWebScraper
 
 
 
-        public static HtmlDocument getHtml(String url)
+        public static async System.Threading.Tasks.Task<HtmlDocument> getHtmlAsync(String url)
         {
             
 
            var htmlDocument = new HtmlDocument();
             //"C:\\Users\\kolbe\\OneDrive\\Desktop"
-            ChromeOptions options = new ChromeOptions();
-            options.AddArgument("headless");
-            ChromeDriver chromeDriver = new ChromeDriver("C:\\Users\\kolbe\\OneDrive\\Desktop",options);
+            var httpClient = new HttpClient();
+            var html = await httpClient.GetStringAsync(url);
+
+
+
+
             
-            
-            
-            
-            chromeDriver.Navigate().GoToUrl(url);
-            var html = chromeDriver.PageSource;
             htmlDocument.LoadHtml(html);
           
-            chromeDriver.Quit();
+           
             return htmlDocument;
         }
 
