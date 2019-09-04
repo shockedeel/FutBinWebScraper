@@ -174,8 +174,9 @@ namespace FutbinWebScraper
             return pic;
         }
 
-        public void getJsonData() {
+        public List<Array> getJsonData() {//PC, XBOX, PS
             string id = this.getPlayerId();
+            List<Array> toReturn = new List<Array>();
             string url = "https://www.futbin.com/19/playerGraph?type=daily_graph&year=19&player="+id+"&set_id=";
             using (WebClient wc = new WebClient())
             {
@@ -183,26 +184,16 @@ namespace FutbinWebScraper
                 var jsonString = wc.DownloadString(url);
                 dynamic json = Newtonsoft.Json.JsonConvert.DeserializeObject(jsonString);
                 var pcPriceDataArray = json["pc"];
-                
+                toReturn.Add(pcPriceDataArray);
 
                 var xboxPriceDataArray = json["xbox"];
+                toReturn.Add(xboxPriceDataArray);
                 var psPriceDataArray = json["ps"];
-                try
-                {
-                    foreach (var arr in pcPriceDataArray)
-                    {
-                        Console.WriteLine(arr[0] + ": " + arr[1]);
-                    }
-                }
-                catch (Exception e) {
-                    Console.WriteLine(e.GetType());
-                    Console.WriteLine(this.getName());
-                }
-                
-        
+                toReturn.Add(psPriceDataArray);
+                return toReturn;
             }
-           
 
+            return null;
         }
 
 

@@ -152,7 +152,7 @@ namespace FutbinWebScraper
                 test.getPlayersUrls(playerurls);
                 foreach (var playerUrl in playerurls)
                 {
-                    Console.WriteLine("pp");
+                    Console.WriteLine("loading new page");
                     var webHtml = WebScraper.getHtmlAsync(WebScraper.baseUrl + playerUrl);
                     playerHtmls.Add(webHtml);
 
