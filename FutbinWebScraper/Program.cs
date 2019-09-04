@@ -163,9 +163,7 @@ namespace FutbinWebScraper
                 {
                     var html = await playerHtml;
                     var playerScraper = new WebScraperPlayerPage(html);
-                    playerScraper.getPlayerId();
-                    playerScraper.getJsonData();
-                    Console.WriteLine(playerScraper.findCTL()[0]);
+                    Player player = new Player(playerScraper);
                 }
                 var nextPage =test.getNextPage();
                 ht = await WebScraper.getHtmlAsync(nextPage);

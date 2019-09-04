@@ -174,21 +174,21 @@ namespace FutbinWebScraper
             return pic;
         }
 
-        public List<Array> getJsonData() {//PC, XBOX, PS
+        public List<Newtonsoft.Json.Linq.JArray> getJsonData() {//PC, XBOX, PS
             string id = this.getPlayerId();
-            List<Array> toReturn = new List<Array>();
+            List<Newtonsoft.Json.Linq.JArray> toReturn = new List<Newtonsoft.Json.Linq.JArray>();
             string url = "https://www.futbin.com/19/playerGraph?type=daily_graph&year=19&player="+id+"&set_id=";
             using (WebClient wc = new WebClient())
             {
                 
                 var jsonString = wc.DownloadString(url);
                 dynamic json = Newtonsoft.Json.JsonConvert.DeserializeObject(jsonString);
-                var pcPriceDataArray = json["pc"];
+                Newtonsoft.Json.Linq.JArray pcPriceDataArray = json["pc"];
                 toReturn.Add(pcPriceDataArray);
 
-                var xboxPriceDataArray = json["xbox"];
+                Newtonsoft.Json.Linq.JArray xboxPriceDataArray = json["xbox"];
                 toReturn.Add(xboxPriceDataArray);
-                var psPriceDataArray = json["ps"];
+                Newtonsoft.Json.Linq.JArray psPriceDataArray = json["ps"];
                 toReturn.Add(psPriceDataArray);
                 return toReturn;
             }
