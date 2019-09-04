@@ -145,26 +145,33 @@ namespace FutbinWebScraper
         public static async void thisOneWaits(String pageUrl) {
             var ht = await WebScraper.getHtmlAsync(pageUrl);
            var test= new WebScraperListPage(ht);
-            List<String> playerurls = new List<String>();
-            List<Task<HtmlDocument>> playerHtmls = new List<Task<HtmlDocument>>();
-            test.getPlayersUrls(playerurls);
-            foreach (var playerUrl in playerurls) {
-                Console.WriteLine("pp");
-                var webHtml = WebScraper.getHtmlAsync(WebScraper.baseUrl+playerUrl);
-                playerHtmls.Add(webHtml);
-               
+            while (test.getNextPage() != null)
+            {
+                List<String> playerurls = new List<String>();
+                List<Task<HtmlDocument>> playerHtmls = new List<Task<HtmlDocument>>();
+                test.getPlayersUrls(playerurls);
+                foreach (var playerUrl in playerurls)
+                {
+                    Console.WriteLine("pp");
+                    var webHtml = WebScraper.getHtmlAsync(WebScraper.baseUrl + playerUrl);
+                    playerHtmls.Add(webHtml);
 
 
-            }
-            foreach (var playerHtml in playerHtmls) {
-                var html = await playerHtml;
-                var playerScraper = new WebScraperPlayerPage(html);
-                playerScraper.getPlayerId();
-                playerScraper.getJsonData();
-                Console.WriteLine(playerScraper.findCTL()[0]);
-            }
 
+                }
+                foreach (var playerHtml in playerHtmls)
+                {
+                    var html = await playerHtml;
+                    var playerScraper = new WebScraperPlayerPage(html);
+                    playerScraper.getPlayerId();
+                    playerScraper.getJsonData();
+                    Console.WriteLine(playerScraper.findCTL()[0]);
+                }
+                var nextPage =test.getNextPage();
+                ht = await WebScraper.getHtmlAsync(nextPage);
+                test = new WebScraperListPage(ht);
 
+            }//for the page webscraper
 
 
         }
